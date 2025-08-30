@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 
 const DashboardScreen = ({ navigation }) => {
   const [user, setUser] = useState({ name: 'John Doe', type: 'Member' });
@@ -8,41 +8,13 @@ const DashboardScreen = ({ navigation }) => {
   const handleLogout = () => {
     setLoading(true);
     
-    // Try different navigation methods to see what works
-    try {
-      // Method 1: Try navigate first
-      navigation.navigate('Login');
-      
-      // If that doesn't work after a delay, try replace
-      setTimeout(() => {
-        if (!navigation.isFocused()) return; // If we already navigated away
-        
-        try {
-          navigation.replace('Login');
-        } catch (e) {
-          console.log('Replace also failed, trying reset');
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-          });
-        }
-      }, 100);
-      
-    } catch (error) {
-      console.error('Navigation error:', error);
-      Alert.alert('Error', 'Cannot navigate to login screen. Please check your navigation setup.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Alternative direct approach
-  const simpleLogout = () => {
-    // Try the most direct approach
+    // Use reset navigation to clear the stack and go to Login
     navigation.reset({
       index: 0,
       routes: [{ name: 'Login' }],
     });
+    
+    setLoading(false);
   };
 
   return (
@@ -98,43 +70,10 @@ const DashboardScreen = ({ navigation }) => {
         </View>
       </ScrollView>
       
-      {/* Debug information */}
-      <View style={styles.debugInfo}>
-        <Text style={styles.debugText}>Press this button to test navigation:</Text>
-        <TouchableOpacity 
-          style={styles.debugButton}
-          onPress={() => {
-            Alert.alert(
-              "Debug Info",
-              "Try these navigation methods:\n\n1. navigation.navigate('Login')\n2. navigation.replace('Login')\n3. navigation.reset()",
-              [
-                {
-                  text: "Try navigate",
-                  onPress: () => navigation.navigate('LoginScreen')
-                },
-                {
-                  text: "Try replace", 
-                  onPress: () => navigation.replace('LoginScreen')
-                },
-                {
-                  text: "Try reset",
-                  onPress: () => navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }],
-                  })
-                }
-              ]
-            );
-          }}
-        >
-          <Text style={styles.debugButtonText}>Test Navigation</Text>
-        </TouchableOpacity>
-      </View>
-      
-      {/* Logout button */}
+      {/* Only Logout button - no Test Navigation */}
       <TouchableOpacity 
         style={[styles.logoutButton, loading && styles.disabledButton]} 
-        onPress={simpleLogout}
+        onPress={handleLogout}
         disabled={loading}
       >
         <Text style={styles.logoutButtonText}>
@@ -152,7 +91,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 180,
+    paddingBottom: 80,
   },
   header: {
     alignItems: 'center',
@@ -251,7 +190,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    bottom: 80,
+    bottom: 20,
     left: 20,
     right: 20,
     borderRadius: 8,
@@ -263,31 +202,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  debugInfo: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: '#f1f2f6',
-    padding: 10,
-    borderRadius: 8,
-  },
-  debugText: {
-    fontSize: 12,
-    color: '#7f8c8d',
-    marginBottom: 5,
-    textAlign: 'center',
-  },
-  debugButton: {
-    backgroundColor: '#3498db',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  debugButtonText: {
-    color: 'white',
-    fontSize: 14,
   },
 });
 
